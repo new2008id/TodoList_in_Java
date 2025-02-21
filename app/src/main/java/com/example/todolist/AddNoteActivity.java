@@ -24,7 +24,9 @@ public class AddNoteActivity extends AppCompatActivity {
     private RadioButton rbLowPriority;
     private RadioGroup rgPriority;
     private EditText etEnterNote;
-    private final Database database = Database.getInstance();
+//    private final Database database = Database.getInstance();
+
+    private NoteDatabase noteDatabase;
 
 
     @Override
@@ -37,6 +39,8 @@ public class AddNoteActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        noteDatabase = NoteDatabase.getInstance(getApplication());
+
         initViews();
         rbLowPriority.setChecked(true);
         buttonSaveNote.setOnClickListener(new View.OnClickListener() {
@@ -66,9 +70,11 @@ public class AddNoteActivity extends AppCompatActivity {
             ).show();
         } else {
             int priority = getPriority();
-            int id = database.getNotes().size();
-            Note note = new Note(id, text, priority);
-            database.addNote(note);
+//            int id = database.getNotes().size();
+            Note note = new Note(text, priority);
+            noteDatabase.notesDao().addNote(note);
+
+//            database.addNote(note);
 
             finish(); // завершаем работу Activity
             Log.d("AddNoteActivity", "Note saved: " + note.toString());
