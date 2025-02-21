@@ -3,28 +3,30 @@ package com.example.todolist;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
-//    private LinearLayout linearLayoutNotes;
+    //    private LinearLayout linearLayoutNotes;
+    private NotesAdapter notesAdapter;
     private RecyclerView rvNotes;
     private FloatingActionButton buttonAddNote;
-    private final Database database = Database.getInstance();
+//    private final Database database = Database.getInstance();
+
+    private NoteDatabase noteDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +38,40 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        noteDatabase = NoteDatabase.getInstance(getApplication());
         initViews();
+        notesAdapter = new NotesAdapter();
+        notesAdapter.setOnNoteClickListener(new NotesAdapter.OnNoteClickListener() {
+            @Override
+            public void onNoteClick(Note note) {
+//                database.removeNote(note.getId());
+//                showNotes();
+            }
+        });
+        rvNotes.setAdapter(notesAdapter);
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(
+                0,
+                ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT
+        ) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView,
+                                  @NonNull RecyclerView.ViewHolder viewHolder,
+                                  @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getAdapterPosition();
+                Note note = notesAdapter.getNotes().get(position);
+//                database.removeNote(note.getId());
+                noteDatabase.notesDao().removeNote(note.getId());
+                showNotes();
+            }
+        });
+        itemTouchHelper.attachToRecyclerView(rvNotes);
+
         buttonAddNote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -58,39 +93,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showNotes() {
-        linearLayoutNotes.removeAllViews();
-        for (Note note : database.getNotes()) {
-            View view = getLayoutInflater().inflate(
-                    R.layout.note_item,
-                    linearLayoutNotes,
-                    false
-            );
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    database.removeNote(note.getId());
-                    showNotes();
-                }
-            });
-
-            TextView textViewNote = view.findViewById(R.id.tvNote);
-            textViewNote.setText(note.getText());
-
-            int colorResId;
-            switch (note.getPriority()) {
-                case 0:
-                    colorResId = android.R.color.holo_green_light;
-                    break;
-                case 1:
-                    colorResId = android.R.color.holo_orange_light;
-                    break;
-                default:
-                    colorResId = android.R.color.holo_red_light;
-            }
-            int color = ContextCompat.getColor(this, colorResId);
-            textViewNote.setBackgroundColor(color);
-            linearLayoutNotes.addView(view);
-        }
+//        notesAdapter.setNotes(database.getNotes());
+        notesAdapter.setNotes(noteDatabase.notesDao().getNotes());
     }
 
     private void launchAddNoteActivity() {

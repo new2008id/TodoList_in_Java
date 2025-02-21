@@ -10,27 +10,38 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesViewHolder> {
-    private ArrayList<Note> notes = new ArrayList<>();
-    public void setNotes(ArrayList<Note> notes) {
+public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteViewHolder> {
+    private List<Note> notes = new ArrayList<>();
+    private OnNoteClickListener onNoteClickListener;
+
+    public List<Note> getNotes() {
+        return new ArrayList<>(notes);
+    }
+
+    public void setOnNoteClickListener(OnNoteClickListener onNoteClickListener) {
+        this.onNoteClickListener = onNoteClickListener;
+    }
+
+    public void setNotes(List<Note> notes) {
         this.notes = notes;
+        notifyDataSetChanged(); // для обновления данных не рекомендуемый способ
     }
 
     @NonNull
     @Override
-    public NotesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public NoteViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(
                 R.layout.note_item,
                 parent,
                 false
         );
-
-        return new NotesViewHolder(view);
+        return new NoteViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(NotesViewHolder viewHolder, int position) {
+    public void onBindViewHolder(NoteViewHolder viewHolder, int position) {
         Note note = notes.get(position);
         viewHolder.textViewNote.setText(note.getText());
 
@@ -47,6 +58,15 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesViewHol
         }
         int color = ContextCompat.getColor(viewHolder.itemView.getContext(), colorResId);
         viewHolder.textViewNote.setBackgroundColor(color);
+
+        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (onNoteClickListener != null) {
+                    onNoteClickListener.onNoteClick(note);
+                }
+            }
+        });
     }
 
     @Override
@@ -54,11 +74,16 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesViewHol
         return notes.size();
     }
 
-    class NotesViewHolder extends RecyclerView.ViewHolder {
-        private TextView textViewNote;
-        public NotesViewHolder(@NonNull View itemView) {
+    class NoteViewHolder extends RecyclerView.ViewHolder {
+        private final TextView textViewNote;
+
+        public NoteViewHolder(@NonNull View itemView) {
             super(itemView);
             textViewNote = itemView.findViewById(R.id.tvNote);
         }
+    }
+
+    interface OnNoteClickListener {
+        void onNoteClick(Note note);
     }
 }

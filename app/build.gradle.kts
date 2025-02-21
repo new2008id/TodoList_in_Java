@@ -1,5 +1,9 @@
 plugins {
     alias(libs.plugins.android.application)
+//    id("kotlin-kapt")
+//    id("com.google.devtools.ksp")
+
+
 }
 
 android {
@@ -41,4 +45,13 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
     implementation("androidx.tracing:tracing:1.2.0")
+
+    val room_version = "2.6.1"
+    implementation("androidx.room:room-runtime:$room_version")
+
+    annotationProcessor ("androidx.room:room-compiler:2.6.1")
+//    kapt("androidx.room:room-compiler:2.5.0")
+//    ksp("androidx.room:room-compiler:2.5.0")
+
+
 }
