@@ -30,9 +30,6 @@ public class AddNoteActivity extends AppCompatActivity {
     private RadioButton rbLowPriority;
     private RadioGroup rgPriority;
     private EditText etEnterNote;
-    //    private final Database database = Database.getInstance();
-//    private Handler handler = new Handler(Looper.getMainLooper());
-//    private NoteDatabase noteDatabase;
     private AddNoteViewModel viewModel;
 
     @Override
@@ -45,7 +42,6 @@ public class AddNoteActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-//        noteDatabase = NoteDatabase.getInstance(getApplication());
         viewModel = new ViewModelProvider(this).get(AddNoteViewModel.class);
         viewModel.getShouldCloseScreen().observe(this, new Observer<Boolean>() {
             @Override
@@ -58,12 +54,7 @@ public class AddNoteActivity extends AppCompatActivity {
         initViews();
         rbLowPriority.setChecked(true);
 
-        buttonSaveNote.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                saveNote();
-            }
-        });
+        buttonSaveNote.setOnClickListener(view -> saveNote());
     }
 
     private void initViews() {
@@ -80,36 +71,14 @@ public class AddNoteActivity extends AppCompatActivity {
         if (text.isEmpty()) {
             Toast.makeText(
                     this,
-                    "Введите описание заметки",
+                    R.string.enter_to_desc,
                     Toast.LENGTH_SHORT
             ).show();
         } else {
             int priority = getPriority();
-//            int id = database.getNotes().size();
             Note note = new Note(text, priority);
             viewModel.saveNote(note);
-
-
-
             finish();
-//            Thread thread = new Thread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    noteDatabase.notesDao().addNote(note);
-//                    handler.post(new Runnable() { // вызываем на главном потоке
-//                        @Override
-//                        public void run() {
-//                            finish(); // завершаем работу Activity
-//                        }
-//                    });
-//                }
-//            });
-//            thread.start();
-
-//            database.addNote(note);
-
-
-            Log.d("AddNoteActivity", "Note saved: " + note.toString());
         }
     }
 

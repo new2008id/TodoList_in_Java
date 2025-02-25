@@ -26,7 +26,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteViewHold
 
     public void setNotes(List<Note> notes) {
         this.notes = notes;
-        notifyDataSetChanged(); // для обновления данных не рекомендуемый способ
+        notifyDataSetChanged(); // для обновления данных, не рекомендуемый способ
     }
 
     @NonNull

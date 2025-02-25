@@ -22,8 +22,6 @@ public class Note {
     @Ignore
     public Note(String text, int priority) {
         this(0, text, priority);
-//        this.text = text;
-//        this.priority = priority;
     }
 
     public int getId() {
