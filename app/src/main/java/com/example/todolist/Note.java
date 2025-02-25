@@ -1,5 +1,6 @@
 package com.example.todolist;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
@@ -37,6 +38,7 @@ public class Note {
         return priority;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "Note{" +
