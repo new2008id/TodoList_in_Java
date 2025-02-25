@@ -9,8 +9,9 @@ import androidx.lifecycle.MutableLiveData;
 
 public class AddNoteViewModel extends AndroidViewModel {
 
-    private NotesDao notesDao;
-    private MutableLiveData<Boolean> shouldCloseScreen = new MutableLiveData<>();
+    private final NotesDao notesDao;
+    private final MutableLiveData<Boolean> shouldCloseScreen = new MutableLiveData<>();
+
     public AddNoteViewModel(@NonNull Application application) {
         super(application);
         notesDao = NoteDatabase.getInstance(application).notesDao();
@@ -21,12 +22,9 @@ public class AddNoteViewModel extends AndroidViewModel {
     }
 
     public void saveNote(Note note) {
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                notesDao.addNote(note);
-                shouldCloseScreen.postValue(true);
-            }
+        Thread thread = new Thread(() -> {
+            notesDao.addNote(note);
+            shouldCloseScreen.postValue(true);
         });
         thread.start();
     }
